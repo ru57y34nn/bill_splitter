@@ -1,11 +1,11 @@
 {% extends 'base.jinja2' %}
 
-{% block subtitle %}Bills{% endblock subtitle %}
+{% block subtitle %}All Bills{% endblock subtitle %}
 
 {% block content %}
 <ul>
-    {% for donation in donations %}
-        <li><b>{{ donation.donor.name }}</b>: {{ donation.value }}</li>
+    {% for bill in bills %}
+        <li><b>{{ bill.name }}</b>: {{ bill.amount }}</li>
     {% endfor %}
 </ul>
 {% endblock content %}

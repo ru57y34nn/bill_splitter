@@ -10,16 +10,16 @@ db.drop_tables([User, Bill])
 
 db.create_tables([User, Bill])
 
-rusty = User(name="Rusty")
-rusty.save()
+dennis = User(username="Dennis")
+dennis.save()
 
-bob = User(name="Bob")
-bob.save()
+mac = User(username="Mac")
+mac.save()
 
-charlie = User(name="Charlie")
+charlie = User(username="Charlie")
 charlie.save()
 
-users = [rusty, bob, charlie]
+users = [dennis, mac, charlie]
 
 #for x in range(30):
 #    Donation(donor=random.choice(donors), value=random.randint(100, 10000)).save()

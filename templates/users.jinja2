@@ -4,8 +4,8 @@
 
 {% block content %}
 <ul>
-    {% for user in users %}
-        <li><b>{{ user.username }}</b>: {{ user.start_date }}</li>
+    {% for user in all_users %}
+        <li><b>{{ user.username }}</b>: {{ user.username }}</li>
     {% endfor %}
 </ul>
 {% endblock content %}
