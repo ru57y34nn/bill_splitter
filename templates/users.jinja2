@@ -5,7 +5,7 @@
 {% block content %}
 <ul>
     {% for user in all_users %}
-        <li><b>{{ user.username }}</b>: {{ user.username }}</li>
+        <li><b>{{ user.username }}</b>: {{ user.username }}, {{ user.move_in }}, {{ user.move_out }}</li>
     {% endfor %}
 </ul>
 {% endblock content %}

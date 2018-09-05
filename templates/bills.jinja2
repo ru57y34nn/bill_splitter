@@ -5,7 +5,7 @@
 {% block content %}
 <ul>
     {% for bill in bills %}
-        <li><b>{{ bill.name }}</b>: {{ bill.amount }}</li>
+        <li><b>{{ bill.name }}</b>: {{ bill.amount }}, {{ bill.first_day }}, {{ bill.last_day }}</li>
     {% endfor %}
 </ul>
 {% endblock content %}
