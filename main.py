@@ -81,8 +81,6 @@ def daterange(start_date, end_date):
 def breakdown():
     bills = [electric, rent]
     users = [mac, dennis]
-#    initialize a bills dictionary here and add bill.name as keys 
-#    and costpeday list as value on each iteration
     bill_cpd = dict()
     for bill in bills:
         billday1 = datetime.datetime.strptime(bill.first_day, "%Y/%m/%d").date()
@@ -103,6 +101,29 @@ def breakdown():
         bill_cpd[bill.name] = costsperday
     return bill_cpd
 
+
+def total_users():
+    bills = Bill.select()
+    users = User.select()
+    bill_cpd = breakdown()
+    users_totals = dict()
+    for user in users:
+        user_total = 0
+        username = user.username
+        users_totals[usernamee] = ''
+        userday1 = datetime.datetime.strptime(user.move_in, "%Y/%m/%d").date()
+        userday2 = datetime.datetime.strptime(user.move_out, "%Y/%m/%d").date()
+        user_days = daterange(userday1, userday2)
+        user_totals = list()
+        for key, value in bill_cpd.items():
+            bill_total = 0
+            for key, value in bill_cpd[key].items():
+                if key in user_days:
+                    bill_total += value
+            user_total += bill_total
+            user_totals.append(bill_total)
+        users_totals[username] = user_totals
+    return users_totals
 
 # function for a view to display each persons totals goes here
 '''
