@@ -3,6 +3,8 @@ import base64
 from flask import Flask, render_template, request, redirect, url_for, session
 from peewee import fn
 from model import Bill, User
+from datetime import date
+from dateutil.rrule import rrule, DAILY
 
 app = Flask(__name__)
 # app.secret_key = b'\xf1A\x88f\x1a@6\x1d\xa2\xc8J\xfc\x9e\x9c1\x86p\x04\xc1\xc7\xc7\x03\xfd\xbd'
@@ -67,6 +69,40 @@ def report():
     return render_template('report.jinja2', bills_total=bills_total)
 
 
+
+
+def daterange(start_date, end_date):
+    days = []
+    for dt in rrule(DAILY, dtstart=start_date, until=end_date):
+        days.append(dt.strftime("%Y-%m-%d"))
+    return days
+
+
+def breakdown():
+    bills = [electric, rent]
+    users = [mac, dennis]
+#    initialize a bills dictionary here and add bill.name as keys 
+#    and costpeday list as value on each iteration
+    bill_cpd = dict()
+    for bill in bills:
+        billday1 = datetime.datetime.strptime(bill.first_day, "%Y/%m/%d").date()
+        billday2 = datetime.datetime.strptime(bill.last_day, "%Y/%m/%d").date()
+        bill_days = daterange(billday1, billday2)
+        cpd = bill.amount / len(bill_days)
+        costsperday = []
+        for day in bill_days:
+            n = 0
+            for user in users:
+                userday1 = datetime.datetime.strptime(user.move_in, "%Y/%m/%d").date()
+                userday2 = datetime.datetime.strptime(user.move_out, "%Y/%m/%d").date()
+                user_days = daterange(userday1, userday2)
+                if day in user_days:
+                    n += 1
+            costsperday.append(n)
+        bill_cpd[bill.name] = costsperday
+    return bill_cpd
+
+
 # function for a view to display each persons totals goes here
 '''
 Afunction should take in each user and get users move_in and move_out date
@@ -83,10 +119,14 @@ def breakdown():
     bills = Bill.select()
     users = User.select()
     for bill in bills:
+        days = (bill.last_day = bill.first_day)
+        cpd = bill.amount / days
         for day in range(bill.last_day - bill.first_day):
+            n = 0
             for user in users:
                 if day in range(user.move_in - user.move_out):
-                    
+                    n += 1
+        cpd = int(bill.last_day - bill.first_day) / n
 
 
 if __name__ == "__main__":
