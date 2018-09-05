@@ -1,9 +1,9 @@
 {% extends 'base.jinja2' %}
 
-{% block subtitle %}New Bill{% endblock subtitle %}
+{% block subtitle %}New User{% endblock subtitle %}
 
 {% block content %}
-    <p>Enter username and  amount, then click submit</p>
+    <p>Enter username and their move in and move out dates, then click submit</p>
     <form method="POST">
         <label for="name">Name:</label><input type="text" id="name" name="name">
         <label for="first_day">First Day</label><input type="text" id="first_day" name="first_day">
