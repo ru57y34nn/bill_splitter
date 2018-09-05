@@ -20,6 +20,12 @@ def home():
 @app.route('/bills/')
 def all():
     bills = Bill.select()
+#    bill_dict = dict()
+    for bill in bills:
+#        bill_name = bill.name
+        bill.amount = "${:0.2f}".format(bill.amount)
+#        bill_start = bill.first_day
+#        bill_end = bill.last_day
     return render_template('bills.jinja2', bills=bills)
 
 
