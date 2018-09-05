@@ -65,20 +65,23 @@ def report():
 # function for a view to display each persons totals goes here
 '''
 Afunction should take in each user and get users move_in and move_out date
-and make a list of dates from first to last day.  It should then get the total from each bill
-and divide that by the total days in the billing period to get a cost per day for the bill.
-For each day in the billing period, it should loop through each persons list of days
-and get a total n for that day that is then uses to divide that days cost per day by.
+and make a list of dates from first to last day. It should then get the total
+from each bill and divide that by the total days in the billing period to get
+a cost per day for the bill. For each day in the billing period, it should
+loop through each persons list of days and get a total n for that day that is
+then uses to divide that days cost per day by.
 '''
+
+
 @app.route('/breakdown/')
 def breakdown():
     bills = Bill.select()
     users = User.select()
     for bill in bills:
-        for day in range of bill.last_day - bill.first_day:
+        for day in range(bill.last_day - bill.first_day):
             for user in users:
-                if day in 
-
+                if day in range(user.move_in - user.move_out):
+                    
 
 
 if __name__ == "__main__":
