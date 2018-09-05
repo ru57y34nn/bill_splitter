@@ -131,14 +131,18 @@ def total_users():
 @app.route('/report/')
 def report():
     bills = Bill.select(Bill.amount)
-    user_totals = total_users()
-#    bill_cpd = breakdown()
+    users = User.select()
     total = 0
     for bill in bills:
         total += bill.amount
     bills_total = total
     bills_total = "${:0.2f}".format(bills_total)
-    return render_template('report.jinja2', bills_total=bills_total, user_totals=user_totals)
+    user_totals = total_users()
+    for key, value in user_totals.items():
+        for user in users:
+            if user.username == key:
+                user.amt_owed = value
+    return render_template('report.jinja2', bills_total=bills_total, users=users)
 
 
 if __name__ == "__main__":
