@@ -3,6 +3,9 @@ import base64
 from flask import Flask, render_template, request, redirect, url_for, session
 from peewee import fn
 from model import Bill, User
+import datetime
+from datetime import date
+from dateutil.rrule import rrule, DAILY
 
 app = Flask(__name__)
 # app.secret_key = b'\xf1A\x88f\x1a@6\x1d\xa2\xc8J\xfc\x9e\x9c1\x86p\x04\xc1\xc7\xc7\x03\xfd\xbd'
@@ -57,25 +60,79 @@ def createbill():
     return render_template('createbill.jinja2')
 
 
+def daterange(start_date, end_date):
+    days = []
+    for dt in rrule(DAILY, dtstart=start_date, until=end_date):
+        days.append(dt.strftime("%Y-%m-%d"))
+    return days
+
+
+def make_date(start_date, end_date):
+    day1 = datetime.datetime.strptime(start_date, "%Y/%m/%d").date()
+    day2 = datetime.datetime.strptime(end_date, "%Y/%m/%d").date()
+    return day1, day2
+
+
+def breakdown():
+    bills = Bill.select()
+    users = User.select()
+    bill_cpd = dict()
+    for bill in bills:
+        billday1, billday2 = make_date(bill.first_day, bill.last_day)
+        bill_days = daterange(billday1, billday2)
+        cpd = bill.amount / float(len(bill_days))
+        costsperday = dict()
+        for day in bill_days:
+            n = 0
+            for user in users:
+                userday1, userday2 = make_date(user.move_in, user.move_out)
+                user_days = daterange(userday1, userday2)
+                if day in user_days:
+                    n += 1
+            costperday = cpd/float(n)
+            costsperday[day] = costperday
+        bill_cpd[str(bill.name)] = costsperday
+    return bill_cpd
+
+
+def total_users():
+    users = User.select()
+    bill_cpd = breakdown()
+    users_totals = dict()
+    for user in users:
+        user_total = 0
+        username = str(user.username)
+        users_totals[username] = ''
+        userday1, userday2 = make_date(user.move_in, user.move_out)
+        user_days = daterange(userday1, userday2)
+        user_totals = list()
+        for key, value in bill_cpd.items():
+            bill_total = 0
+            for key, value in bill_cpd[key].items():
+                if key in user_days:
+                    bill_total += value
+            user_total += bill_total
+            user_totals.append(bill_total)
+        users_totals[username] = user_totals
+        users_final = dict()
+        for key, value in users_totals.items():
+            total = sum(map(float, value))
+            total = "${:0.2f}".format(total)
+            users_final[key] = total
+    return users_final
+
+
 @app.route('/report/')
 def report():
     bills = Bill.select(Bill.amount)
+    user_totals = total_users()
+#    bill_cpd = breakdown()
     total = 0
     for bill in bills:
         total += bill.amount
     bills_total = total
-    return render_template('report.jinja2', bills_total=bills_total)
-
-
-# function for a view to display each persons totals goes here
-'''
-Afunction should take in each user and get users move_in and move_out date
-and make a list of dates from first to last day. It should then get the total
-from each bill and divide that by the total days in the billing period to get
-a cost per day for the bill. For each day in the billing period, it should
-loop through each persons list of days and get a total n for that day that is
-then uses to divide that days cost per day by.
-'''
+    bills_total = "${:0.2f}".format(bills_total)
+    return render_template('report.jinja2', bills_total=bills_total, user_totals=user_totals)
 
 
 if __name__ == "__main__":

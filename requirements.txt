@@ -6,4 +6,6 @@ MarkupSafe==1.0
 passlib==1.7.1
 peewee==3.6.4
 psycopg2==2.7.5
+python-dateutil==2.7.3
+six==1.11.0
 Werkzeug==0.14.1

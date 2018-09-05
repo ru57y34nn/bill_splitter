@@ -1,2 +1,4 @@
 # bill_splitter
-A versatile bill-splitting Flask-based web-app built with Python.
+
+A versatile Flask-based bill-splitting web-app built with Python.
+
