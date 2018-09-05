@@ -98,7 +98,8 @@ def breakdown():
                 user_days = daterange(userday1, userday2)
                 if day in user_days:
                     n += 1
-            costsperday.append(n)
+            costperday = cpd/float(n)
+            costsperday[day] = costperday
         bill_cpd[bill.name] = costsperday
     return bill_cpd
 
