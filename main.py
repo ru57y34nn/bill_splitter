@@ -67,21 +67,25 @@ def daterange(start_date, end_date):
     return days
 
 
-def breakdown():
+def make_date(start_date, end_date):
+    day1 = datetime.datetime.strptime(start_date, "%Y/%m/%d").date()
+    day2 = datetime.datetime.strptime(end_date, "%Y/%m/%d").date()
+    return day1, day2
+
+
+def cpd_breakdown():
     bills = Bill.select()
     users = User.select()
     bill_cpd = dict()
     for bill in bills:
-        billday1 = datetime.datetime.strptime(bill.first_day, "%Y/%m/%d").date()
-        billday2 = datetime.datetime.strptime(bill.last_day, "%Y/%m/%d").date()
+        billday1, billday2 = make_date(bill.first_day, bill.last_day)
         bill_days = daterange(billday1, billday2)
         cpd = bill.amount / float(len(bill_days))
         costsperday = dict()
         for day in bill_days:
             n = 0
             for user in users:
-                userday1 = datetime.datetime.strptime(user.move_in, "%Y/%m/%d").date()
-                userday2 = datetime.datetime.strptime(user.move_out, "%Y/%m/%d").date()
+                userday1, userday2 = make_date(user.move_in, user.move_out)
                 user_days = daterange(userday1, userday2)
                 if day in user_days:
                     n += 1
@@ -99,8 +103,7 @@ def total_users():
         user_total = 0
         username = user.username
         users_totals[username] = ''
-        userday1 = datetime.datetime.strptime(user.move_in, "%Y/%m/%d").date()
-        userday2 = datetime.datetime.strptime(user.move_out, "%Y/%m/%d").date()
+        userday1, userday2 = make_date(user.move_in, user.move_out)
         user_days = daterange(userday1, userday2)
         user_totals = list()
         for key, value in bill_cpd.items():
