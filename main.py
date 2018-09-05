@@ -117,7 +117,7 @@ def total_users():
         users_final = dict()
         for key, value in users_totals.items():
             total = sum(map(float, value))
-            total = "{:0.2f}".format(total)
+            total = "${:0.2f}".format(total)
             users_final[key] = total
     return users_final
 
@@ -131,6 +131,7 @@ def report():
     for bill in bills:
         total += bill.amount
     bills_total = total
+    bills_total = "${:0.2f}".format(bills_total)
     return render_template('report.jinja2', bills_total=bills_total, user_totals=user_totals)
 
 
