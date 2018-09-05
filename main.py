@@ -32,7 +32,9 @@ def createuser():
         user_name = request.form['name']
         movein_day = request.form['first_day']
         moveout_day = request.form['last_day']
-        new_user = User(username=user_name, move_in=movein_day, move_out=moveout_day)
+        new_user = User(username=user_name,
+                        move_in=movein_day,
+                        move_out=moveout_day)
         new_user.save()
         return redirect(url_for('users'))
     return render_template('createuser.jinja2')
@@ -45,7 +47,10 @@ def createbill():
         bill_amt = int(request.form['amount'])
         bill_start = request.form['first_day']
         bill_end = request.form['last_day']
-        new_bill = Bill(name=bill_name, amount=bill_amt, first_day=bill_start, last_day=bill_end)
+        new_bill = Bill(name=bill_name,
+                        amount=bill_amt,
+                        first_day=bill_start,
+                        last_day=bill_end)
         new_bill.save()
         return redirect(url_for('all'))
 
@@ -71,17 +76,6 @@ a cost per day for the bill. For each day in the billing period, it should
 loop through each persons list of days and get a total n for that day that is
 then uses to divide that days cost per day by.
 '''
-
-
-@app.route('/breakdown/')
-def breakdown():
-    bills = Bill.select()
-    users = User.select()
-    for bill in bills:
-        for day in range(bill.last_day - bill.first_day):
-            for user in users:
-                if day in range(user.move_in - user.move_out):
-                    
 
 
 if __name__ == "__main__":
