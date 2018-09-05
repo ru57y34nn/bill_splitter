@@ -73,7 +73,7 @@ def make_date(start_date, end_date):
     return day1, day2
 
 
-def cpd_breakdown():
+def breakdown():
     bills = Bill.select()
     users = User.select()
     bill_cpd = dict()
@@ -91,7 +91,7 @@ def cpd_breakdown():
                     n += 1
             costperday = cpd/float(n)
             costsperday[day] = costperday
-        bill_cpd[bill.name] = costsperday
+        bill_cpd[str(bill.name)] = costsperday
     return bill_cpd
 
 
@@ -101,7 +101,7 @@ def total_users():
     users_totals = dict()
     for user in users:
         user_total = 0
-        username = user.username
+        username = str(user.username)
         users_totals[username] = ''
         userday1, userday2 = make_date(user.move_in, user.move_out)
         user_days = daterange(userday1, userday2)
@@ -117,6 +117,7 @@ def total_users():
         users_final = dict()
         for key, value in users_totals.items():
             total = sum(map(float, value))
+            total = "{:0.2f}".format(total)
             users_final[key] = total
     return users_final
 
