@@ -125,6 +125,8 @@ def total_users():
         users_totals[username] = user_totals
     return users_totals
 
+
+
 # function for a view to display each persons totals goes here
 '''
 Afunction should take in each user and get users move_in and move_out date
