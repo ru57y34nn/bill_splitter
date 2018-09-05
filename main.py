@@ -70,6 +70,14 @@ and divide that by the total days in the billing period to get a cost per day fo
 For each day in the billing period, it should loop through each persons list of days
 and get a total n for that day that is then uses to divide that days cost per day by.
 '''
+@app.route('/breakdown/')
+def breakdown():
+    bills = Bill.select()
+    users = User.select()
+    for bill in bills:
+        for day in range of bill.last_day - bill.first_day:
+            for user in users:
+                if day in 
 
 
 
