@@ -4,12 +4,13 @@
 </head>
 <body>
     <nav>
-        <a id="bills" href="{{ url_for('all') }}">See all bills</a>
-        <a id="users" href="{{ url_for('users') }}">See all users</a>
-        <a id="create" href="{{ url_for('create') }}">Add a new bill</a>
-        <a id="report" href="{{ url_for('report') }}">Total for all bills</a>
+        <a id="bills" href="{{ url_for('all') }}">Bills</a>
+        <a id="users" href="{{ url_for('users') }}">Users</a>
+        <a id="createuser" href="{{ url_for('createuser') }}">Add new user</a>
+        <a id="createbill" href="{{ url_for('createbill') }}">Add new bill</a>
+        <a id="report" href="{{ url_for('report') }}">Total all bills</a>
     </nav>
-	<h1>Billing</h1>
+	<h1>Bill Splitter</h1>
 	<h2>{% block subtitle %} {% endblock subtitle %}</h2>
 	{% block content %} {% endblock content %}
 </body>

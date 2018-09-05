@@ -26,8 +26,20 @@ def users():
     return render_template('users.jinja2', all_users=all_users)
 
 
-@app.route('/create', methods=['GET', 'POST'])
-def create():
+@app.route('/createuser/', methods=['GET', 'POST'])
+def createuser():
+    if request.method == 'POST':
+        user_name = request.form['name']
+        movein_day = request.form['first_day']
+        moveout_day = request.form['last_day']
+        new_user = User(username=user_name, move_in=movein_day, move_out=moveout_day)
+        new_user.save()
+        return redirect(url_for('users'))
+    return render_template('createuser.jinja2')
+
+
+@app.route('/createbill/', methods=['GET', 'POST'])
+def createbill():
     if request.method == 'POST':
         bill_name = request.form['name']
         bill_amt = int(request.form['amount'])
@@ -37,10 +49,10 @@ def create():
         new_bill.save()
         return redirect(url_for('all'))
 
-    return render_template('create.jinja2')
+    return render_template('createbill.jinja2')
 
 
-@app.route('/report')
+@app.route('/report/')
 def report():
     bills = Bill.select(Bill.amount)
     total = 0
