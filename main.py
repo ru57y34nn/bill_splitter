@@ -74,8 +74,8 @@ def daterange(start_date, end_date):
 
 
 def make_date(start_date, end_date):
-    day1 = datetime.datetime.strptime(start_date, "%Y/%m/%d").date()
-    day2 = datetime.datetime.strptime(end_date, "%Y/%m/%d").date()
+    day1 = datetime.datetime.strptime(str(start_date), "%Y/%m/%d").date()
+    day2 = datetime.datetime.strptime(str(end_date), "%Y/%m/%d").date()
     return day1, day2
 
 
@@ -138,11 +138,11 @@ def report():
     bills_total = total
     bills_total = "${:0.2f}".format(bills_total)
     user_totals = total_users()
-#    for key, value in user_totals.items():
-#        for user in users:
-#            if str(user.username) == key:
-#                user.move_in = value
-    return render_template('report.jinja2', bills_total=bills_total, user_totals=user_totals)
+    for key, value in user_totals.items():
+        for user in users:
+            if str(user.username) == key:
+                user.amt_owed = value
+    return render_template('report.jinja2', bills_total=bills_total, users=users)
 
 
 if __name__ == "__main__":

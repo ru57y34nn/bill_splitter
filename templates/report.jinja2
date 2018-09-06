@@ -4,7 +4,8 @@
 
 {% block content %}
 <ul>
-    <li><b>{{ bills_total }}</b>: </li>
-    <li>{{ user_totals}}</li>
+    {% for user in users %}
+        <li><b>{{ bills_total }}</b>: {{ user.username }}, {{ user.amt_owed }}</li>
+    {% endfor %}
 </ul>
 {% endblock content %}
