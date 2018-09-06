@@ -69,7 +69,7 @@ def createbill():
 def daterange(start_date, end_date):
     days = []
     for dt in rrule(DAILY, dtstart=start_date, until=end_date):
-        days.append(dt.strftime("%Y-%m-%d"))
+        days.append(dt.strftime("%Y/%m/%d"))
     return days
 
 
