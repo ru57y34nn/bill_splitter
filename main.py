@@ -138,11 +138,11 @@ def report():
     bills_total = total
     bills_total = "${:0.2f}".format(bills_total)
     user_totals = total_users()
-    for key, value in user_totals.items():
-        for user in users:
-            if user.username == key:
-                user.move_in = value
-    return render_template('report.jinja2', bills_total=bills_total, users=users)
+#    for key, value in user_totals.items():
+#        for user in users:
+#            if str(user.username) == key:
+#                user.move_in = value
+    return render_template('report.jinja2', bills_total=bills_total, user_totals=user_totals)
 
 
 if __name__ == "__main__":

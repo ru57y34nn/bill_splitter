@@ -5,8 +5,6 @@
 {% block content %}
 <ul>
     <li><b>{{ bills_total }}</b>: </li>
-    {% for user in users %}
-        <li>{{ user.username}}, {{ user.move_in }}</li>
-    {% endfor %}
+    <li>{{ user_totals}}</li>
 </ul>
 {% endblock content %}
