@@ -74,8 +74,8 @@ def daterange(start_date, end_date):
 
 
 def make_date(start_date, end_date):
-    day1 = datetime.datetime.strptime(start_date, "%Y/%m/%d").date()
-    day2 = datetime.datetime.strptime(end_date, "%Y/%m/%d").date()
+    day1 = datetime.datetime.strptime(str(start_date), "%Y/%m/%d").date()
+    day2 = datetime.datetime.strptime(str(end_date), "%Y/%m/%d").date()
     return day1, day2
 
 
