@@ -141,7 +141,7 @@ def report():
     for key, value in user_totals.items():
         for user in users:
             if user.username == key:
-                user.amt_owed = value
+                user.move_in = value
     return render_template('report.jinja2', bills_total=bills_total, users=users)
 
 
