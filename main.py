@@ -9,7 +9,7 @@ from dateutil.rrule import rrule, DAILY
 
 app = Flask(__name__)
 # app.secret_key = b'\xf1A\x88f\x1a@6\x1d\xa2\xc8J\xfc\x9e\x9c1\x86p\x04\xc1\xc7\xc7\x03\xfd\xbd'
-# app.secret_key = os.environ.get('SECRET_KEY').encode()
+app.secret_key = os.environ.get('SECRET_KEY').encode()
 
 
 @app.route('/')
@@ -18,7 +18,7 @@ def home():
 
 
 @app.route('/bills/')
-def all():
+def all(): 
     bills = Bill.select()
 #    bill_dict = dict()
     for bill in bills:
@@ -130,7 +130,7 @@ def total_users():
 
 @app.route('/report/')
 def report():
-    bills = Bill.select(Bill.amount)
+    bills = Bill.select()
     users = User.select()
     total = 0
     for bill in bills:
