@@ -17,6 +17,21 @@ def home():
     return redirect(url_for('all'))
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        user = User.select().where(User.username == request.form['name']).get()
+
+        if user and pbkdf2_sha256.verify(request.form['password'], user.password):
+            session['username'] = request.form['name']
+            return redirect(url_for('all_tasks'))
+
+        return render_template('login.jinja2', error="Incorrect username or password.")
+
+    else:
+        return render_template('login.jinja2')
+
+
 @app.route('/bills/')
 def all():
     bills = Bill.select()

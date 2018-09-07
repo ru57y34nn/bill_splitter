@@ -15,6 +15,7 @@ class User(BaseModel):
     username = CharField(max_length=255, unique=True)
     move_in = DateField()
     move_out = DateField()
+    password = CharField(max_length=255, null=True)
 #    days_billed = IntegerField(move_out - move_in)
 
 
