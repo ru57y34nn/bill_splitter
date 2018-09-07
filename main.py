@@ -6,10 +6,11 @@ from model import Bill, User
 import datetime
 from datetime import date
 from dateutil.rrule import rrule, DAILY
+from passlib.hash import pbkdf2_sha256
 
 app = Flask(__name__)
 # app.secret_key = b'\xf1A\x88f\x1a@6\x1d\xa2\xc8J\xfc\x9e\x9c1\x86p\x04\xc1\xc7\xc7\x03\xfd\xbd'
-# app.secret_key = os.environ.get('SECRET_KEY').encode()
+app.secret_key = os.environ.get('SECRET_KEY').encode()
 
 
 @app.route('/')
@@ -24,7 +25,7 @@ def login():
 
         if user and pbkdf2_sha256.verify(request.form['password'], user.password):
             session['username'] = request.form['name']
-            return redirect(url_for('all_tasks'))
+            return redirect(url_for('users'))
 
         return render_template('login.jinja2', error="Incorrect username or password.")
 
