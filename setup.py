@@ -1,6 +1,6 @@
 #import random
 from model import db, User, Bill 
-import passlib.hash imort pbkdf2_sha256
+import passlib.hash import pbkdf2_sha256
 
 db.connect()
 
