@@ -53,6 +53,8 @@ def users():
 
 @app.route('/createuser/', methods=['GET', 'POST'])
 def createuser():
+    if 'username' not in session:
+        return redirect(url_for('login'))
     if request.method == 'POST':
         user_name = request.form['name']
         movein_day = request.form['first_day']
@@ -67,6 +69,8 @@ def createuser():
 
 @app.route('/createbill/', methods=['GET', 'POST'])
 def createbill():
+    if 'username' not in session:
+        return redirect(url_for('login'))
     if request.method == 'POST':
         bill_name = request.form['name']
         bill_amt = int(request.form['amount'])
@@ -111,7 +115,7 @@ def breakdown():
                 user_days = daterange(userday1, userday2)
                 if day in user_days:
                     n += 1
-            costperday = cpd/float(n)
+            costperday = cpd / float(n)
             costsperday[day] = costperday
         bill_cpd[str(bill.name)] = costsperday
     return bill_cpd
