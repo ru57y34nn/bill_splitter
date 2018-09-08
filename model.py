@@ -24,4 +24,5 @@ class Bill(BaseModel):
     amount = IntegerField()
     first_day = DateField()
     last_day = DateField()
+    paid_by = ForeignKeyField(User, null=True)
 #    user = ForeignKeyField(User, backref='bills')
