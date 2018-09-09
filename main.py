@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from peewee import fn
 from model import Bill, User
 import datetime
-from datetime import date
+from datetime import date, datetime
 from dateutil.rrule import rrule, DAILY
 from passlib.hash import pbkdf2_sha256
 
@@ -40,6 +40,8 @@ def all():
     for bill in bills:
 #        bill_name = bill.name
         bill.amount = "${:0.2f}".format(bill.amount)
+        bill.paid_on = bill.paid_on
+        bill.paid_by = str(bill.paid_by)
 #        bill_start = bill.first_day
 #        bill_end = bill.last_day
     return render_template('bills.jinja2', bills=bills)
@@ -172,11 +174,12 @@ def paidby():
     if request.method == 'POST':
         payer_name = request.form['username']
         bill_name = request.form['billname']
-        find_bill = Bill.select().where(Bill.name == bill_name)
+#        find_bill = Bill.select().where(Bill.name == bill_name).get()
         find_user = User.select().where(User.username == payer_name)
 
         if find_user.exists():
-            find_bill.paidby = payer_name
+            Bill.update(paid_on=datetime.now(), paid_by=find_user.get())\
+                .where(Bill.name == bill_name).execute()
             return redirect(url_for('all'))
         else:
             return render_template('paidby.jinja2', error="User does not exist.")

@@ -5,7 +5,9 @@
 {% block content %}
 <ul>
     {% for bill in bills %}
-        <li><b>{{ bill.name }}</b>: {{ bill.amount }}, {{ bill.first_day }}, {{ bill.last_day }}, {{ bill.paidby }}</li>
+    <li>
+        <b>{{ bill.name }}</b>: {{ bill.amount }}, {{ bill.first_day }}, {{ bill.last_day }}, {% if bill.paid_on %}Paid on: {{ bill.paid_on }} Paid by: {{ bill.paid_by.username }}{% else %} Unpaid {% endif %}
+    </li>
     {% endfor %}
 </ul>
 {% endblock content %}

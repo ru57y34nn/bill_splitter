@@ -1,6 +1,6 @@
 import os
 
-from peewee import Model, CharField, IntegerField, DateField, ForeignKeyField
+from peewee import Model, CharField, IntegerField, DateField, DateTimeField, ForeignKeyField
 from playhouse.db_url import connect
 
 db = connect(os.environ.get('DATABASE_URL', 'sqlite:///my_database.db'))
@@ -24,5 +24,6 @@ class Bill(BaseModel):
     amount = IntegerField()
     first_day = DateField()
     last_day = DateField()
-    paid_by = ForeignKeyField(User, null=True)
+    paid_on = DateTimeField(null=True)
+    paid_by = ForeignKeyField(User, backref='all', null=True)
 #    user = ForeignKeyField(User, backref='bills')
