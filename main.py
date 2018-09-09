@@ -165,19 +165,21 @@ def report():
     return render_template('report.jinja2', bills_total=bills_total, users=users)
 
 
-@app.route('/paidby/')
+@app.route('/paidby/', methods=['GET', 'POST'])
 def paidby():
     if 'username' not in session:
         return redirect(url_for('login'))
     if request.method == 'POST':
         payer_name = request.form['username']
-        bill_name = int(request.form['billname'])
+        bill_name = request.form['billname']
         find_bill = Bill.select().where(Bill.name == bill_name)
+        find_user = User.select().where(User.username == payer_name)
 
-        if find_bill.exists():
-            Bill(name=find_bill.get(), paidby=payer_name).save()
+        if find_user.exists():
+            find_bill.paidby = payer_name
             return redirect(url_for('all'))
-        return render_template('paidby.jinja2', error="User does not exist.")
+        else:
+            return render_template('paidby.jinja2', error="User does not exist.")
     else:
         return render_template('paidby.jinja2')
 
