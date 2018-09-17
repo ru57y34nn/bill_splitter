@@ -1,11 +1,12 @@
 import os
-import base64
+# import base64
 from flask import Flask, render_template, request, redirect, url_for, session
-from peewee import fn
+# from peewee import fn
 from model import Bill, User
 import datetime
-from datetime import date
+from datetime import date, datetime
 from dateutil.rrule import rrule, DAILY
+from passlib.hash import pbkdf2_sha256
 
 app = Flask(__name__)
 # app.secret_key = b'\xf1A\x88f\x1a@6\x1d\xa2\xc8J\xfc\x9e\x9c1\x86p\x04\xc1\xc7\xc7\x03\xfd\xbd'
@@ -17,6 +18,21 @@ def home():
     return redirect(url_for('all'))
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        user = User.select().where(User.username == request.form['name']).get()
+
+        if user and pbkdf2_sha256.verify(request.form['password'], user.password):
+            session['username'] = request.form['name']
+            return redirect(url_for('users'))
+
+        return render_template('login.jinja2', error="Incorrect username or password.")
+
+    else:
+        return render_template('login.jinja2')
+
+
 @app.route('/bills/')
 def all(): 
     bills = Bill.select()
@@ -24,6 +40,8 @@ def all():
     for bill in bills:
 #        bill_name = bill.name
         bill.amount = "${:0.2f}".format(bill.amount)
+        bill.paid_on = bill.paid_on
+        bill.paid_by = str(bill.paid_by)
 #        bill_start = bill.first_day
 #        bill_end = bill.last_day
     return render_template('bills.jinja2', bills=bills)
@@ -37,6 +55,8 @@ def users():
 
 @app.route('/createuser/', methods=['GET', 'POST'])
 def createuser():
+    if 'username' not in session:
+        return redirect(url_for('login'))
     if request.method == 'POST':
         user_name = request.form['name']
         movein_day = request.form['first_day']
@@ -51,6 +71,8 @@ def createuser():
 
 @app.route('/createbill/', methods=['GET', 'POST'])
 def createbill():
+    if 'username' not in session:
+        return redirect(url_for('login'))
     if request.method == 'POST':
         bill_name = request.form['name']
         bill_amt = int(request.form['amount'])
@@ -74,8 +96,8 @@ def daterange(start_date, end_date):
 
 
 def make_date(start_date, end_date):
-    day1 = datetime.datetime.strptime(str(start_date), "%Y-%m-%d").date()
-    day2 = datetime.datetime.strptime(str(end_date), "%Y-%m-%d").date()
+    day1 = datetime.strptime(str(start_date), "%Y-%m-%d").date()
+    day2 = datetime.strptime(str(end_date), "%Y-%m-%d").date()
     return day1, day2
 
 
@@ -95,7 +117,7 @@ def breakdown():
                 user_days = daterange(userday1, userday2)
                 if day in user_days:
                     n += 1
-            costperday = cpd/float(n)
+            costperday = cpd / float(n)
             costsperday[day] = costperday
         bill_cpd[str(bill.name)] = costsperday
     return bill_cpd
@@ -112,6 +134,7 @@ def total_users():
         userday1, userday2 = make_date(user.move_in, user.move_out)
         user_days = daterange(userday1, userday2)
         user_totals = list()
+        # user_totals = dict()
         for key, value in bill_cpd.items():
             bill_total = 0
             for key, value in bill_cpd[key].items():
@@ -144,6 +167,25 @@ def report():
                 user.amt_owed = value
     return render_template('report.jinja2', bills_total=bills_total, users=users)
 
+
+@app.route('/paidby/', methods=['GET', 'POST'])
+def paidby():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        payer_name = request.form['username']
+        bill_name = request.form['billname']
+#        find_bill = Bill.select().where(Bill.name == bill_name).get()
+        find_user = User.select().where(User.username == payer_name)
+
+        if find_user.exists():
+            Bill.update(paid_on=datetime.now(), paid_by=find_user.get())\
+                .where(Bill.name == bill_name).execute()
+            return redirect(url_for('all'))
+        else:
+            return render_template('paidby.jinja2', error="User does not exist.")
+    else:
+        return render_template('paidby.jinja2')
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 6738))
