@@ -1,7 +1,7 @@
 import os
-import base64
+# import base64
 from flask import Flask, render_template, request, redirect, url_for, session
-from peewee import fn
+# from peewee import fn
 from model import Bill, User
 import datetime
 from datetime import date, datetime
@@ -96,8 +96,8 @@ def daterange(start_date, end_date):
 
 
 def make_date(start_date, end_date):
-    day1 = datetime.datetime.strptime(str(start_date), "%Y-%m-%d").date()
-    day2 = datetime.datetime.strptime(str(end_date), "%Y-%m-%d").date()
+    day1 = datetime.strptime(str(start_date), "%Y-%m-%d").date()
+    day2 = datetime.strptime(str(end_date), "%Y-%m-%d").date()
     return day1, day2
 
 
@@ -134,6 +134,7 @@ def total_users():
         userday1, userday2 = make_date(user.move_in, user.move_out)
         user_days = daterange(userday1, userday2)
         user_totals = list()
+        # user_totals = dict()
         for key, value in bill_cpd.items():
             bill_total = 0
             for key, value in bill_cpd[key].items():
