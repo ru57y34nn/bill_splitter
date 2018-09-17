@@ -133,20 +133,23 @@ def total_users():
         users_totals[username] = ''
         userday1, userday2 = make_date(user.move_in, user.move_out)
         user_days = daterange(userday1, userday2)
-        user_totals = list()
-        # user_totals = dict()
+        # user_totals = list()
+        user_totals = dict()
         for key, value in bill_cpd.items():
+            bill_name = key
             bill_total = 0
             for key, value in bill_cpd[key].items():
                 if key in user_days:
                     bill_total += value
             user_total += bill_total
-            user_totals.append(bill_total)
+            user_totals[bill_name] = user_total
         users_totals[username] = user_totals
         users_final = dict()
         for key, value in users_totals.items():
-            total = sum(map(float, value))
-            total = "${:0.2f}".format(total)
+            username = key
+            for key, value in users_totals[key].items():
+                total = sum(map(float, value))
+                total = "${:0.2f}".format(total)
             users_final[key] = total
     return users_final
 
