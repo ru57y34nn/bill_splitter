@@ -128,7 +128,6 @@ def total_users():
     bill_cpd = breakdown()
     users_totals = dict()
     for user in users:
-        user_total = 0
         username = str(user.username)
         users_totals[username] = ''
         userday1, userday2 = make_date(user.move_in, user.move_out)
@@ -138,20 +137,20 @@ def total_users():
         for key, value in bill_cpd.items():
             bill_name = key
             bill_total = 0
-            for key, value in bill_cpd[key].items():
+            for key, value in bill_cpd[bill_name].items():
                 if key in user_days:
                     bill_total += value
-            user_total += bill_total
-            user_totals[bill_name] = user_total
+            user_totals[bill_name] = bill_total
         users_totals[username] = user_totals
         users_final = dict()
         for key, value in users_totals.items():
             username = key
-            for key, value in users_totals[key].items():
-                total = sum(map(float, value))
-                total = "${:0.2f}".format(total)
-            users_final[key] = total
-    return users_final
+            usertotal = 0
+            for key, value in users_totals[username].items():
+                usertotal += value
+            usertotal = "${:0.2f}".format(usertotal)
+            users_final[username] = usertotal
+    return users_totals, users_final
 
 
 @app.route('/report/')
@@ -163,12 +162,13 @@ def report():
         total += bill.amount
     bills_total = total
     bills_total = "${:0.2f}".format(bills_total)
-    user_totals = total_users()
+    user_bill_totals = total_users()[0]
+    user_totals = total_users()[1]
     for key, value in user_totals.items():
         for user in users:
             if user.username == key:
                 user.amt_owed = value
-    return render_template('report.jinja2', bills_total=bills_total, users=users)
+    return render_template('report.jinja2', bills_total=bills_total, users=users, user_bill_totals=user_bill_totals)
 
 
 @app.route('/paidby/', methods=['GET', 'POST'])
