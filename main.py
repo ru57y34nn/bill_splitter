@@ -38,7 +38,7 @@ def all():
     bills = Bill.select()
 #    bill_dict = dict()
     for bill in bills:
-#        bill_name = bill.name
+        # bill_name = bill.name
         bill.amount = "${:0.2f}".format(bill.amount)
         bill.paid_on = bill.paid_on
         bill.paid_by = str(bill.paid_by)
@@ -153,6 +153,18 @@ def total_users():
     return users_totals, users_final
 
 
+def who_owes_who():
+    '''
+    for bill in bills:
+        for users != bill.paid_by:
+            user_bill_totals = total_users()[0]
+            for key, value in user_bill_totals[user]:
+                if key == bill:
+                    user owes bill.paid_by value
+    '''
+    pass
+
+
 @app.route('/report/')
 def report():
     bills = Bill.select(Bill.amount)
@@ -168,7 +180,8 @@ def report():
         for user in users:
             if user.username == key:
                 user.amt_owed = value
-    return render_template('report.jinja2', bills_total=bills_total, users=users, user_bill_totals=user_bill_totals)
+    return render_template('report.jinja2', bills_total=bills_total, users=users,
+                           user_bill_totals=user_bill_totals)
 
 
 @app.route('/paidby/', methods=['GET', 'POST'])
