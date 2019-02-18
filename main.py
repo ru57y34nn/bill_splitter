@@ -1,16 +1,16 @@
 import os
-# import base64
+import base64
 from flask import Flask, render_template, request, redirect, url_for, session
-# from peewee import fn
+from peewee import fn
 from model import Bill, User
 import datetime
-from datetime import date, datetime
+from datetime import date#, datetime
 from dateutil.rrule import rrule, DAILY
 from passlib.hash import pbkdf2_sha256
 
 app = Flask(__name__)
-# app.secret_key = b'\xf1A\x88f\x1a@6\x1d\xa2\xc8J\xfc\x9e\x9c1\x86p\x04\xc1\xc7\xc7\x03\xfd\xbd'
-app.secret_key = os.environ.get('SECRET_KEY').encode()
+app.secret_key = b'\xf1A\x88f\x1a@6\x1d\xa2\xc8J\xfc\x9e\x9c1\x86p\x04\xc1\xc7\xc7\x03\xfd\xbd'
+#app.secret_key = os.environ.get('SECRET_KEY').encode()
 
 
 @app.route('/')
@@ -38,7 +38,7 @@ def all():
     bills = Bill.select()
 #    bill_dict = dict()
     for bill in bills:
-        # bill_name = bill.name
+#        bill_name = bill.name
         bill.amount = "${:0.2f}".format(bill.amount)
         bill.paid_on = bill.paid_on
         bill.paid_by = str(bill.paid_by)
@@ -96,8 +96,8 @@ def daterange(start_date, end_date):
 
 
 def make_date(start_date, end_date):
-    day1 = datetime.strptime(str(start_date), "%Y-%m-%d").date()
-    day2 = datetime.strptime(str(end_date), "%Y-%m-%d").date()
+    day1 = datetime.datetime.strptime(str(start_date), "%Y-%m-%d").date()
+    day2 = datetime.datetime.strptime(str(end_date), "%Y-%m-%d").date()
     return day1, day2
 
 
@@ -123,45 +123,59 @@ def breakdown():
     return bill_cpd
 
 
-def total_users():
+def users_bills_totals():
+    """
+    output: dictionary with usernames as keys and additional dictionaries as values,
+    which have bill names as keys and user totals for said bill as values.
+    """
+    #use this function to get and display user totals per bill
     users = User.select()
     bill_cpd = breakdown()
     users_totals = dict()
     for user in users:
+        user_total = 0
         username = str(user.username)
         users_totals[username] = ''
         userday1, userday2 = make_date(user.move_in, user.move_out)
         user_days = daterange(userday1, userday2)
-        # user_totals = list()
+#        user_totals = list()
         user_totals = dict()
-        for key, value in bill_cpd.items():
-            bill_name = key
+        for bill, cpd in bill_cpd.items():
             bill_total = 0
-            for key, value in bill_cpd[bill_name].items():
-                if key in user_days:
-                    bill_total += value
-            user_totals[bill_name] = bill_total
+            for day, cost in bill_cpd[bill].items():
+                if day in user_days:
+                    bill_total += cost
+            user_total += bill_total
+            user_totals[bill] = bill_total
+#            user_totals.append(bill_total)
         users_totals[username] = user_totals
-        users_final = dict()
-        for key, value in users_totals.items():
-            username = key
-            usertotal = 0
-            for key, value in users_totals[username].items():
-                usertotal += value
-            usertotal = "${:0.2f}".format(usertotal)
-            users_final[username] = usertotal
-    return users_totals, users_final
+    return users_totals
 
 
-def who_owes_who():
-    '''
-    for bill in bills:
-        for users != bill.paid_by:
-            user_bill_totals = total_users()[0]
-            for key, value in user_bill_totals[user]:
-                if key == bill:
-                    user owes bill.paid_by value
-    '''
+def total_users():
+    """
+    output: dictionary with usernames as keys and total amout owed by user as values.
+    """
+    #user this function to get and dispaly overall user totals
+    users_totals = users_bills_totals()
+    users_final = dict()
+    for user, bills in users_totals.items():
+        total = 0
+        for bill, amount in users_totals[user].items():
+#            print type(amount)
+            total += amount
+        total = "${:0.2f}".format(total)
+        users_final[user] = total
+    return users_final
+
+
+def user_pay_bill():
+    #this function will require a new page for a user to subimit a payment amount for a bill.
+    pass
+
+
+def update_user_total():
+    #this function will update a user's total due by subtracting paid amout for a bill.
     pass
 
 
@@ -174,14 +188,12 @@ def report():
         total += bill.amount
     bills_total = total
     bills_total = "${:0.2f}".format(bills_total)
-    user_bill_totals = total_users()[0]
-    user_totals = total_users()[1]
+    user_totals = total_users()
     for key, value in user_totals.items():
         for user in users:
             if user.username == key:
                 user.amt_owed = value
-    return render_template('report.jinja2', bills_total=bills_total, users=users,
-                           user_bill_totals=user_bill_totals)
+    return render_template('report.jinja2', bills_total=bills_total, users=users)
 
 
 @app.route('/paidby/', methods=['GET', 'POST'])
@@ -202,6 +214,7 @@ def paidby():
             return render_template('paidby.jinja2', error="User does not exist.")
     else:
         return render_template('paidby.jinja2')
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 6738))
