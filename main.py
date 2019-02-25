@@ -10,7 +10,7 @@ from passlib.hash import pbkdf2_sha256
 
 app = Flask(__name__)
 app.secret_key = b'\xf1A\x88f\x1a@6\x1d\xa2\xc8J\xfc\x9e\x9c1\x86p\x04\xc1\xc7\xc7\x03\xfd\xbd'
-#app.secret_key = os.environ.get('SECRET_KEY').encode()
+#app. secret_key = os.environ.get('SECRET_KEY').encode()
 
 
 @app.route('/')
@@ -189,10 +189,10 @@ def report():
     bills_total = total
     bills_total = "${:0.2f}".format(bills_total)
     user_totals = total_users()
-    for key, value in user_totals.items():
+    for name, amt in user_totals.items():
         for user in users:
-            if user.username == key:
-                user.amt_owed = value
+            if user.username == name:
+                user.amt_owed = amt
     return render_template('report.jinja2', bills_total=bills_total, users=users)
 
 
