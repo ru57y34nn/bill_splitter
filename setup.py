@@ -17,10 +17,11 @@ electricity = Bill(name="Electricity", amount=100, first_day="2018-01-05", last_
 electricity.save()
 
 dennis = User(username="Dennis", move_in="2018-01-01", move_out="2018-01-31",
-                          password=pbkdf2_sha256.hash("password"))
+              password=pbkdf2_sha256.hash("password"))
 dennis.save()
 
-mac = User(username="Mac", move_in="2018-01-05", move_out="2018-02-15")
+mac = User(username="Mac", move_in="2018-01-05", move_out="2018-02-15",
+		   password=pbkdf2_sha256.hash("drowssap"))
 mac.save()
 
 # charlie = User(username="Charlie", move_in="2018/01/01", move_out="2018/01/25")

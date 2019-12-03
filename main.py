@@ -95,10 +95,14 @@ def daterange(start_date, end_date):
     return days
 
 
-def make_date(start_date, end_date):
-    day1 = datetime.datetime.strptime(str(start_date), "%Y-%m-%d").date()
-    day2 = datetime.datetime.strptime(str(end_date), "%Y-%m-%d").date()
-    return day1, day2
+def make_date(date):
+    day = datetime.datetime.strptime(str(date), "%Y-%m-%d").date()
+    # day2 = datetime.datetime.strptime(str(end_date), "%Y-%m-%d").date()
+    return day #, day2
+
+
+def bill_daily_cost(bill_name, daybill_date):
+    bills = Bill.select() # need sql query here to select bill.name == bill_name
 
 
 def breakdown():
@@ -106,14 +110,16 @@ def breakdown():
     users = User.select()
     bill_cpd = dict()
     for bill in bills:
-        billday1, billday2 = make_date(bill.first_day, bill.last_day)
+        billday1 = make_date(bill.first_day)
+        billday2 = make_date(bill.last_day)
         bill_days = daterange(billday1, billday2)
         cpd = bill.amount / float(len(bill_days))
         costsperday = dict()
         for day in bill_days:
             n = 0
             for user in users:
-                userday1, userday2 = make_date(user.move_in, user.move_out)
+                userday1 = make_date(user.move_in)
+                userday2 = make_date(user.move_out) 
                 user_days = daterange(userday1, userday2)
                 if day in user_days:
                     n += 1
@@ -136,7 +142,8 @@ def users_bills_totals():
         user_total = 0
         username = str(user.username)
         users_totals[username] = ''
-        userday1, userday2 = make_date(user.move_in, user.move_out)
+        userday1 = make_date(user.move_in)
+        userday2 = make_date(user.move_out)
         user_days = daterange(userday1, userday2)
 #        user_totals = list()
         user_totals = dict()
@@ -174,9 +181,12 @@ def user_pay_bill():
     pass
 
 
-def update_user_total():
+def update_user_total(user, amount):
     #this function will update a user's total due by subtracting paid amout for a bill.
-    pass
+    user_total = user.acct_balance
+    new_total = user_total + amount
+    user.acct_balance = new_total
+    # pass
 
 
 @app.route('/report/')
